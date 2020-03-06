@@ -1,0 +1,8 @@
+equals:
+instanceof, false or true, #equals, #loc, this
+
+SetUp:
+super, setUp, #new, #build, #add  
+
+toString:
+toString, format, string append, sb.append

@@ -2,6 +2,11 @@
 .DS_Store
 Icon?
 
+# JavaPCA
+**/*.iml
+**/.idea
+**/target
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

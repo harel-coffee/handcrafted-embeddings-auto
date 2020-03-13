@@ -1,0 +1,4 @@
+To save embeddings [200 path * 320 decoder_size] of code2seq:
+1. Clone https://github.com/mdrafiqulrabin/context-code2seq/
+2. Run JavaExtractor on target data folder (i.e. equals) for c2s format
+3. Load java-large-model on target data folder (i.e. equals) for context

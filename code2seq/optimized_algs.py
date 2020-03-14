@@ -1,8 +1,10 @@
 import pandas as pd
 import numpy as np
-from datetime import datetime
 import os, pathlib, shutil
+from datetime import datetime
+import _pickle as pk
 from sklearn import preprocessing
+from sklearn.decomposition import PCA
 from sklearn import model_selection
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
@@ -33,19 +35,16 @@ mClfs = ["NB", "LR", "SVM", "GBDT", "PT"]
 mDataTypes = ["java-large"]
 mDataCats = ["training"]
 mTargets = ["equals", "setUp", "toString"]
-mFeatureTypes = ["norm", "binary"]
+mFeatureTypes = ["pca"]
 
 mDebug = False
 
 # methods
-def getDataset(filename):
-    df = pd.read_csv(filename, header=None, index_col=None)
-    training_data = df.drop([df.columns[0], df.columns[1]], axis=1) #drop path,method
-    correct_labels = training_data.iloc[:,-1]
-    feature_vectors = training_data.drop(training_data.columns[-1], axis=1) #drop label
-    scaler = preprocessing.StandardScaler().fit(feature_vectors)
-    scaled_features = scaler.transform(feature_vectors)
-    X_all, y_all = scaled_features, correct_labels
+def getPCAData(filename):
+    dict_xy = {}
+    with open(filename, 'rb') as xy_file:
+        dict_xy = pk.load(xy_file)
+    X_all, y_all = dict_xy["Xpk"], dict_xy["ypk"]
     return X_all, y_all
 
 def getBestNB(nbType=None):
@@ -57,8 +56,8 @@ def getBestNB(nbType=None):
     else:
         smoothing_range = np.logspace(start=-9, stop=1, num=11, base=10)
         param_dict = dict(var_smoothing=smoothing_range)
-        clf = GaussianNB()
-return clf, param_dict
+        clf = GaussianNB() 
+    return clf, param_dict
 
 def getBestLR():
     C_range = np.logspace(start=-5, stop=5, num=11, base=10)
@@ -88,8 +87,8 @@ def getBestGBDT():
 def getBestPT():
     alpha_range = np.logspace(start=-5, stop=5, num=11, base=10)
     param_dict = dict(alpha=alpha_range, penalty=['l1', 'l2'])
-    clf = Perceptron(max_iter=mEPOCHS, tol=mTOL, shuffle=True,
-                     early_stopping=True, validation_fraction=mVF, n_iter_no_change=mPATIENCE,
+    clf = Perceptron(max_iter=mEPOCHS, tol=mTOL, shuffle=True, 
+                     early_stopping=True, validation_fraction=mVF, n_iter_no_change=mPATIENCE, 
                      n_jobs=-1, random_state=mRS)
     return clf, param_dict
 
@@ -106,13 +105,13 @@ def getGridModel(salg, sft):
     elif salg == "PT":
         clf, param_dict = getBestPT()
     cv_skf = StratifiedKFold(n_splits=mSKF, shuffle=True, random_state=mRS)
-    gclf = GridSearchCV(estimator=clf,
-                        refit=True,
+    gclf = GridSearchCV(estimator=clf, 
+                        refit=True, 
                         scoring='f1_weighted',
                         n_jobs=-1,
-                        param_grid=param_dict,
+                        param_grid=param_dict, 
                         cv=cv_skf)
-return gclf
+    return gclf
 
 def evaluateModel(smodel, salg, sft, X_all, y_all):
     rskf = RepeatedStratifiedKFold(n_splits=mRSKF[0], n_repeats=mRSKF[1], random_state=mRS)
@@ -161,15 +160,15 @@ def computeAvgResult(mroot):
 for salg in mClfs:
     for jt in mDataTypes:
         for jc in mDataCats:
-            mroot = "../result/handcrafted/score/" + jt + "/" + jc + "/" + salg
+            mroot = "../result/code2seq/score/" + jt + "/" + jc + "/" + salg
             print("Start: ", mroot)
             mcols = ['methodClf','algClf','accuracy','precision','recall','f1-score','type-1','type-2']
             mdf = pd.DataFrame(columns=mcols)
             for mtarget in mTargets:
                 for sft in mFeatureTypes:
                     smodel = mtarget + "_" + sft
-                    mpath = "../data/handcrafted/" + jt + "/" + jc + "/" + sft + "/" + mtarget + ".csv"
-                    X_all, y_all = getDataset(mpath)
+                    mpath = "../data/code2seq/" + jt + "/" + jc + "/" + sft + "/" + mtarget + ".pk"
+                    X_all, y_all = getPCAData(mpath)
                     rlist = evaluateModel(smodel, salg, sft, X_all, y_all)
                     tdf = pd.DataFrame(rlist, columns=mcols)
                     mdf = mdf.append(tdf, ignore_index=True)

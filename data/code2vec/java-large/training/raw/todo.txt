@@ -1,4 +1,0 @@
-To save embeddings [200 path * 384 embed_size] of code2vec:
-1. Clone https://github.com/mdrafiqulrabin/context-code2vec/
-2. Run JavaExtractor on target data folder (i.e. equals) for c2v format
-3. Load java-large-model on target data folder (i.e. equals) for context

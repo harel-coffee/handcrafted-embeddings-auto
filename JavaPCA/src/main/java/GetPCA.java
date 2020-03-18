@@ -1,27 +1,28 @@
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.ast.stmt.TryStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.TreeVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class SetUpPCA extends VoidVisitorAdapter<Object> {
-    private static String mMethodName = "setUp";
+public class GetPCA extends VoidVisitorAdapter<Object> {
+    private static String mMethodName = "get";
     private File mJavaFile = null;
     private int mLOC;
     private int mLabelBinary;
     private String mLabelStr;
 
-    private int mSuper, mSetUp, mNew, mBuild, mAdd;
+    private int mReturn, mGet;
 
-    SetUpPCA() {
-        mSuper = 0;
-        mSetUp = 0;
-        mNew = 0;
-        mBuild = 0;
-        mAdd = 0;
+    GetPCA() {
+        mReturn = 0;
+        mGet = 0;
         mLOC = 0;
         mLabelBinary = 0;
         mLabelStr = "";
@@ -38,32 +39,23 @@ public class SetUpPCA extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(CompilationUnit cu, Object obj) {
-        locateSetUpPCA(cu, obj);
+        locateGetPCA(cu, obj);
         mLOC = Common.getLOC(cu, mMethodName);
         mLabelBinary = Common.getLabelBinary(mJavaFile, mMethodName);
         mLabelStr = Common.getLabelStr(cu);
         super.visit(cu, obj);
     }
 
-    private void locateSetUpPCA(CompilationUnit cu, Object obj) {
+    private void locateGetPCA(CompilationUnit cu, Object obj) {
         new TreeVisitor() {
             @Override
             public void process(Node node) {
                 try {
-                    if (node instanceof SuperExpr) {
-                        mSuper++;
-                    } else if (node instanceof ObjectCreationExpr
-                            && node.toString().startsWith("new")) {
-                        mNew++;
-                    } else if (node instanceof MethodCallExpr) {
-                        String subExpr = ((MethodCallExpr) node).getName().toString();
-                        if (subExpr.equals(mMethodName)) {
-                            mSetUp++;
-                        } else if (subExpr.startsWith("build")) {
-                            mBuild++;
-                        } else if (subExpr.startsWith("add")) {
-                            mAdd++;
-                        }
+                    if (node instanceof ReturnStmt) {
+                        mReturn++;
+                    } else if (node instanceof MethodCallExpr
+                            && ((MethodCallExpr) node).getName().toString().startsWith("get")) {
+                        mGet++;
                     }
                 } catch (Exception ignored) {}
             }
@@ -75,11 +67,8 @@ public class SetUpPCA extends VoidVisitorAdapter<Object> {
         return mJavaFile + "," +
                 mLabelStr + "," +
 
-                mSuper + "," +
-                mSetUp + "," +
-                mNew + "," +
-                mBuild + "," +
-                mAdd + "," +
+                mReturn + "," +
+                mGet + "," +
 
                 mLabelBinary;
     }

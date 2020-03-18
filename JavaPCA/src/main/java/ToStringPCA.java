@@ -12,15 +12,19 @@ import java.io.File;
 public class ToStringPCA extends VoidVisitorAdapter<Object> {
     private static String mMethodName = "toString";
     private File mJavaFile = null;
-    private int mMethodCallExpr, mFormatMethodCallExpr, mStrAppend, mStringBuilderMethodCallExpr, mAppendMethodCallExpr, mLabelBinary;
+    private int mLOC;
+    private int mLabelBinary;
     private String mLabelStr;
 
+    private int mToString, mFormat, mStringBuilder, mSbAppend, mStrAppend;
+
     ToStringPCA() {
-        mMethodCallExpr = 0;
-        mFormatMethodCallExpr = 0;
+        mToString = 0;
+        mFormat = 0;
+        mStringBuilder = 0;
+        mSbAppend = 0;
         mStrAppend = 0;
-        mStringBuilderMethodCallExpr = 0;
-        mAppendMethodCallExpr = 0;
+        mLOC = 0;
         mLabelBinary = 0;
         mLabelStr = "";
     }
@@ -36,36 +40,42 @@ public class ToStringPCA extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(CompilationUnit cu, Object obj) {
-        locateEqualsPCA(cu, obj);
+        locateToStringPCA(cu, obj);
+        mLOC = Common.getLOC(cu, mMethodName);
         mLabelBinary = Common.getLabelBinary(mJavaFile, mMethodName);
         mLabelStr = Common.getLabelStr(cu);
         super.visit(cu, obj);
     }
 
-    private void locateEqualsPCA(CompilationUnit cu, Object obj) {
+    private void locateToStringPCA(CompilationUnit cu, Object obj) {
         new TreeVisitor() {
             @Override
             public void process(Node node) {
-                if (node != null) {
-                    if (node instanceof MethodCallExpr && ((MethodCallExpr) node).getName().toString().equals(mMethodName)){
-                        mMethodCallExpr++;
-                    } else if (node instanceof MethodCallExpr && ((MethodCallExpr) node).getName().toString().equals("format")){
-                        mFormatMethodCallExpr++;
-                    }else if (node instanceof ClassOrInterfaceType && ((ClassOrInterfaceType) node).getName().toString().equals("StringBuilder")){
-                        mStringBuilderMethodCallExpr++;
-                    } else if (node instanceof MethodCallExpr && ((MethodCallExpr) node).getName().toString().equals("append")){
-                        mAppendMethodCallExpr++;
+                try {
+                    if (node instanceof MethodCallExpr) {
+                        String subExpr = ((MethodCallExpr) node).getName().toString();
+                        if (subExpr.equals(mMethodName)) {
+                            mToString++;
+                        } else if (subExpr.equals("format")) {
+                            mFormat++;
+                        } else if (subExpr.equals("append")) {
+                            mSbAppend++;
+                        }
+                    } else if (node instanceof ClassOrInterfaceType
+                            && ((ClassOrInterfaceType) node).getName().toString().equals("StringBuilder")) {
+                        mStringBuilder++;
                     } else if (node instanceof ReturnStmt) {
                         new TreeVisitor() {
                             @Override
                             public void process(Node node) {
-                                if (node instanceof StringLiteralExpr && node.getParentNode().orElse(null) instanceof BinaryExpr){
+                                if (node instanceof StringLiteralExpr
+                                        && node.getParentNode().orElse(null) instanceof BinaryExpr) {
                                     mStrAppend++;
                                 }
                             }
                         }.visitPreOrder(node);
                     }
-                }
+                } catch (Exception ignored) {}
             }
         }.visitPreOrder(cu);
     }
@@ -74,11 +84,13 @@ public class ToStringPCA extends VoidVisitorAdapter<Object> {
     public String toString() {
         return mJavaFile + "," +
                 mLabelStr + "," +
-                mMethodCallExpr + "," +
-                mFormatMethodCallExpr + "," +
+
+                mToString + "," +
+                mFormat + "," +
+                mStringBuilder + "," +
+                mSbAppend + "," +
                 mStrAppend + "," +
-                mStringBuilderMethodCallExpr + "," +
-                mAppendMethodCallExpr + "," +
+
                 mLabelBinary;
     }
 

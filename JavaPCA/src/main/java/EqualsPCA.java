@@ -13,14 +13,17 @@ import java.io.File;
 public class EqualsPCA extends VoidVisitorAdapter<Object> {
     private static String mMethodName = "equals";
     private File mJavaFile = null;
-    private int mInstanceOfExpr, mBooleanLiteralExpr, mMethodCallExpr, mThisExpr, mLOC, mLabelBinary;
+    private int mLOC;
+    private int mLabelBinary;
     private String mLabelStr;
 
+    private int mInstanceOf, mBoolean, mEquals, mThis;
+
     EqualsPCA() {
-        mInstanceOfExpr = 0;
-        mBooleanLiteralExpr = 0;
-        mMethodCallExpr = 0;
-        mThisExpr = 0;
+        mInstanceOf = 0;
+        mBoolean = 0;
+        mEquals = 0;
+        mThis = 0;
         mLOC = 0;
         mLabelBinary = 0;
         mLabelStr = "";
@@ -48,17 +51,18 @@ public class EqualsPCA extends VoidVisitorAdapter<Object> {
         new TreeVisitor() {
             @Override
             public void process(Node node) {
-                if (node != null) {
+                try {
                     if (node instanceof InstanceOfExpr) {
-                        mInstanceOfExpr++;
+                        mInstanceOf++;
                     } else if (node instanceof BooleanLiteralExpr) {
-                        mBooleanLiteralExpr++;
-                    } else if (node instanceof MethodCallExpr && ((MethodCallExpr) node).getName().toString().equals(mMethodName)){
-                        mMethodCallExpr++;
-                    } else if (node instanceof ThisExpr){
-                        mThisExpr++;
+                        mBoolean++;
+                    } else if (node instanceof MethodCallExpr
+                            && ((MethodCallExpr) node).getName().toString().equals(mMethodName)) {
+                        mEquals++;
+                    } else if (node instanceof ThisExpr) {
+                        mThis++;
                     }
-                }
+                } catch (Exception ignored) {}
             }
         }.visitPreOrder(cu);
     }
@@ -67,11 +71,13 @@ public class EqualsPCA extends VoidVisitorAdapter<Object> {
     public String toString() {
         return mJavaFile + "," +
                 mLabelStr + "," +
-                mInstanceOfExpr + "," +
-                mBooleanLiteralExpr + "," +
-                mMethodCallExpr + "," +
-                mThisExpr + "," +
+
+                mInstanceOf + "," +
+                mBoolean + "," +
+                mEquals + "," +
+                mThis + "," +
                 mLOC + "," +
+
                 mLabelBinary;
     }
 

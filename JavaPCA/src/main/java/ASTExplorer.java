@@ -36,19 +36,43 @@ public class ASTExplorer implements Callable<Void> {
         javaFiles.forEach((javaFile) -> {
             try {
                 // for target
-                if (javaFile.toString().endsWith(ToStringPCA.getMethodName())) {
-                    new ToStringPCA().inspectSourceCode(javaFile);
-                } else if (javaFile.toString().endsWith(EqualsPCA.getMethodName())) {
+                if (javaFile.toString().endsWith(EqualsPCA.getMethodName())) {
                     new EqualsPCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(MainPCA.getMethodName())) {
+                    new MainPCA().inspectSourceCode(javaFile);
                 } else if (javaFile.toString().endsWith(SetUpPCA.getMethodName())) {
                     new SetUpPCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(OnCreatePCA.getMethodName())) {
+                    new OnCreatePCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(ToStringPCA.getMethodName())) {
+                    new ToStringPCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(RunPCA.getMethodName())) {
+                    new RunPCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(HashCodePCA.getMethodName())) {
+                    new HashCodePCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(InitPCA.getMethodName())) {
+                    new InitPCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(ExecutePCA.getMethodName())) {
+                    new ExecutePCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(GetPCA.getMethodName())) {
+                    new GetPCA().inspectSourceCode(javaFile);
+                } else if (javaFile.toString().endsWith(ClosePCA.getMethodName())) {
+                    new ClosePCA().inspectSourceCode(javaFile);
                 }
 
                 // for non-target
                 if (javaFile.toString().contains("/nonTarget/")) {
-                    new ToStringPCA().inspectSourceCode(javaFile);
                     new EqualsPCA().inspectSourceCode(javaFile);
+                    new MainPCA().inspectSourceCode(javaFile);
                     new SetUpPCA().inspectSourceCode(javaFile);
+                    new OnCreatePCA().inspectSourceCode(javaFile);
+                    new ToStringPCA().inspectSourceCode(javaFile);
+                    new RunPCA().inspectSourceCode(javaFile);
+                    new HashCodePCA().inspectSourceCode(javaFile);
+                    new InitPCA().inspectSourceCode(javaFile);
+                    new ExecutePCA().inspectSourceCode(javaFile);
+                    new GetPCA().inspectSourceCode(javaFile);
+                    new ClosePCA().inspectSourceCode(javaFile);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();

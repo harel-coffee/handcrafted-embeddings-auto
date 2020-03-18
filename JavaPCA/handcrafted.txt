@@ -1,8 +1,12 @@
-equals:
-instanceof, false or true, #equals, #loc, this
-
-SetUp:
-super, setUp, #new, #build, #add  
-
-toString:
-toString, format, string append, sb.append
+Label	Frequency	Features
+equals	64263	instanceof, false/true, equals, loc, this
+main	45871	println, loc, String
+setUp	42066	super, setUp, new, build, add
+onCreate	39438	Bundle, super, onCreate, setContentView, R
+toString	39327	toString, format, StringBuilder, string append(str1+str2), append()
+run	33876	TaskManager/Handler, success, loc, #{, Error, Message
+hashCode	32216	hashcode, ?(ternary operator)
+init	32105	init, set, create
+execute	23066	cmd, execut*(execute/execution), success/failure, try/catch+throw, job/thread(handler)
+get	21002	return, get
+close	18008	close, null

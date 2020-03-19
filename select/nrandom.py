@@ -16,7 +16,7 @@ mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode"
 def saveNRadomSample(mpaths, fname):
     np.random.shuffle(mpaths)
     npaths = random.sample(population=mpaths, k=mN)
-    fname = "data/nrandom/" + fname + ".txt"
+    fname = "../data/nrandom/" + fname + ".txt"
     pathlib.Path(os.path.dirname(fname)).mkdir(parents=True, exist_ok=True)
     with open(fname, 'w') as f:
         for tpath in npaths:
@@ -27,7 +27,7 @@ def getDataframe():
     dfs = []
     for jt in mDataTypes:
         for jc in mDataCats:
-            fpath = "data/filter/" + jt + "-" + jc + ".csv"
+            fpath = "../data/filter/" + jt + "-" + jc + ".csv"
             fdf = pd.read_csv(fpath, sep=",", names=["path","method","size"])
             fdf = fdf[~fdf['path'].astype(str).str.contains("space|comma")]
             dfs.append(fdf)

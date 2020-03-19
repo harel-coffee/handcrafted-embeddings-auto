@@ -11,7 +11,7 @@ def saveOnCopy(mpaths, mtarget):
         shutil.copy2(p1,p2)
 
 for jt in mDataTypes:
-    fname = "data/nrandom/" + jt + "/*.txt"
+    fname = "../data/nrandom/" + jt + "/*.txt"
     mTargetFiles = glob.glob(fname)
     for fname in mTargetFiles:
         mtarget = (fname.split("/")[-1]).replace(".txt","")

@@ -3,8 +3,9 @@ from sklearn import preprocessing
 import os, pathlib, shutil
 
 mDataTypes = ["java-large"]
-mDataCats = ["training"]
-mTargets = ["toString","equals","setUp"]
+mDataCats = ["t470"]
+mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close", "start", "add", "write", "create", "tearDown", "clear", "read", "reset", "update"]
+mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close"]
 
 for jt in mDataTypes:
     for jc in mDataCats:

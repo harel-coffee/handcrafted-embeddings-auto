@@ -8,10 +8,11 @@ random.seed(mRS)
 np.random.seed(mRS)
 
 mDataTypes = ["java-large"]
-mDataCats = ["training", "validation", "test"]
+mDataCats = ["test"]
 
-mN = 1000
+mN = 470
 mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close", "start", "add", "write", "create", "tearDown", "clear", "read", "reset", "update"]
+mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close"]
 
 def saveNRadomSample(mpaths, fname):
     np.random.shuffle(mpaths)
@@ -29,13 +30,14 @@ def getDataframe():
         for jc in mDataCats:
             fpath = "../data/filter/" + jt + "-" + jc + ".csv"
             fdf = pd.read_csv(fpath, sep=",", names=["path","method","size"])
-            fdf = fdf[~fdf['path'].astype(str).str.contains("space|comma")]
+            #fdf = fdf[~fdf['path'].astype(str).str.contains("space|comma")]
             dfs.append(fdf)
     mdf = pd.concat(dfs, axis=0, ignore_index=True)
     return mdf
 
 for jt in mDataTypes:
     mdf = getDataframe()
+    print(len(mdf))
     for mtarget in mTargets:
         tdf = mdf.loc[mdf['method'] == mtarget]
         fname = jt + "/" + mtarget

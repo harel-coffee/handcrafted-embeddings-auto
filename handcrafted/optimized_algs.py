@@ -6,7 +6,6 @@ from sklearn import preprocessing
 from sklearn import model_selection
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, BernoulliNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
@@ -16,9 +15,9 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 import sys, warnings
-warnings.filterwarnings("ignore")
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
+    os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
 
 # params
 mRS =  42 #int(datetime.now().timestamp())
@@ -26,14 +25,14 @@ mEPOCHS = 3000 #max_iter to converge
 mPATIENCE = 10 #n_iter_no_change for early stopping
 mTOL = 0.001 #Tolerance for stopping criterion
 mVF = 0.1 #validation_fraction for early stopping
-mSKF = 10 #n_splits of StratifiedKFold for GridSearchCV
-mRSKF = [5, 3] #(n_splits,n_repeats) of RepeatedStratifiedKFold for Train/Test split
+mSKF = [5,10] #Train/Test and GridSearch
 
 mClfs = ["NB", "LR", "SVM", "GBDT", "PT"]
 mDataTypes = ["java-large"]
-mDataCats = ["training"]
-mTargets = ["equals", "setUp", "toString"]
+mDataCats = ["t470"]
 mFeatureTypes = ["norm", "binary"]
+mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close", "start", "add", "write", "create", "tearDown", "clear", "read", "reset", "update"]
+mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close"]
 
 mDebug = False
 
@@ -58,7 +57,7 @@ def getBestNB(nbType=None):
         smoothing_range = np.logspace(start=-9, stop=1, num=11, base=10)
         param_dict = dict(var_smoothing=smoothing_range)
         clf = GaussianNB()
-return clf, param_dict
+    return clf, param_dict
 
 def getBestLR():
     C_range = np.logspace(start=-5, stop=5, num=11, base=10)
@@ -105,19 +104,19 @@ def getGridModel(salg, sft):
         clf, param_dict = getBestGBDT()
     elif salg == "PT":
         clf, param_dict = getBestPT()
-    cv_skf = StratifiedKFold(n_splits=mSKF, shuffle=True, random_state=mRS)
+    cv_skf = StratifiedKFold(n_splits=mSKF[1], shuffle=True, random_state=mRS)
     gclf = GridSearchCV(estimator=clf,
                         refit=True,
                         scoring='f1_weighted',
                         n_jobs=-1,
                         param_grid=param_dict,
                         cv=cv_skf)
-return gclf
+    return gclf
 
 def evaluateModel(smodel, salg, sft, X_all, y_all):
-    rskf = RepeatedStratifiedKFold(n_splits=mRSKF[0], n_repeats=mRSKF[1], random_state=mRS)
+    skf = StratifiedKFold(n_splits=mSKF[0], random_state=mRS)
     rlist = []
-    for train_index, test_index in rskf.split(X_all, y_all):
+    for train_index, test_index in skf.split(X_all, y_all):
         clist = []
         X_train, X_test = X_all[train_index], X_all[test_index]
         y_train, y_test = y_all[train_index], y_all[test_index]
@@ -148,9 +147,9 @@ def evaluateModel(smodel, salg, sft, X_all, y_all):
     return rlist
 
 def computeAvgResult(mroot):
-    mpath = mroot + "_rskf.csv"
+    mpath = mroot + "_skf.csv"
     mdf = pd.read_csv(mpath)
-    adf = mdf.groupby(['methodClf']).mean().reset_index()
+    adf = mdf.groupby(by=['methodClf'], sort=False).mean().reset_index()
     for c in adf.columns[1:]:
         adf[c] = adf[c].apply(lambda x: '{:.3f}'.format(round(x, 3)))
     mpath = mroot + "_avg.csv"
@@ -166,6 +165,7 @@ for salg in mClfs:
             mcols = ['methodClf','algClf','accuracy','precision','recall','f1-score','type-1','type-2']
             mdf = pd.DataFrame(columns=mcols)
             for mtarget in mTargets:
+                print("Start: ", mtarget)
                 for sft in mFeatureTypes:
                     smodel = mtarget + "_" + sft
                     mpath = "../data/handcrafted/" + jt + "/" + jc + "/" + sft + "/" + mtarget + ".csv"
@@ -173,7 +173,8 @@ for salg in mClfs:
                     rlist = evaluateModel(smodel, salg, sft, X_all, y_all)
                     tdf = pd.DataFrame(rlist, columns=mcols)
                     mdf = mdf.append(tdf, ignore_index=True)
-            mpath = mroot + "_rskf.csv"
+                print("Done: ", mtarget)
+            mpath = mroot + "_skf.csv"
             pathlib.Path(os.path.dirname(mpath)).mkdir(parents=True, exist_ok=True)
             mdf.to_csv(mpath, index=None)
             computeAvgResult(mroot)

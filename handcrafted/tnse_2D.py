@@ -41,8 +41,8 @@ def tsne_scatter(x, colors):
 
 # call t-SNE visualizer
 mDataTypes = ["java-large"]
-mDataCats = ["training"]
-mTargets = ["equals", "setUp", "toString"]
+mDataCats = []
+mTargets = []
 types = ["count", "norm", "binary"]
 
 for jt in mDataTypes:

@@ -3,9 +3,10 @@ from sklearn import preprocessing
 import os, ast, pathlib, shutil
 
 mDataTypes = ["java-large"]
-mDataCats = ["training"]
-mTargets = ["toString","equals","setUp"]
-mEmbedSize = [200, 384] # [max_path, embed_size(source+path+target)]
+mDataCats = ["t470"]
+mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close", "start", "add", "write", "create", "tearDown", "clear", "read", "reset", "update"]
+mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close"]
+mEmbedSize = [384] # [embed_size(source+path+target)]
 
 def getDataframeByTarget(mpath, mtarget):
     fname = mpath + "/raw/" + mtarget + ".csv"
@@ -13,8 +14,7 @@ def getDataframeByTarget(mpath, mtarget):
     df = pd.read_csv(fname, names=mcols, header=None)
     df = df.drop(["predict"], axis=1)
     df["embedding"] = df["embedding"].apply(lambda x: eval(x))
-    df["embedding"] = df["embedding"].apply(lambda lrglist: [item for sublist in lrglist for item in sublist])
-    mcols = ['e' + str(i) for i in range(1, mEmbedSize[0] * mEmbedSize[1] + 1)]
+    mcols = ['e' + str(i) for i in range(1, mEmbedSize[0] + 1)]
     df[mcols] = pd.DataFrame(df.embedding.values.tolist(), index=df.index)
     df = df.drop(["embedding"], axis=1)
     return df
@@ -34,4 +34,4 @@ for jt in mDataTypes:
             pathlib.Path(os.path.dirname(fname)).mkdir(parents=True, exist_ok=True)
             df_flat.to_csv(fname, index=False, header=False)
 
-        print("Done: ", mtarget, len(df_flat))
+            print("Done: ", mtarget, len(df_flat))

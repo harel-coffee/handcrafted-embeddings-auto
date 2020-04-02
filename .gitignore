@@ -2,7 +2,7 @@
 .DS_Store
 Icon?
 
-# JavaPCA
+# JavaHFE
 **/*.iml
 **/.idea
 **/target

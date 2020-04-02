@@ -1,9 +1,7 @@
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
-import com.github.javaparser.ast.visitor.TreeVisitor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -13,8 +11,9 @@ import java.util.List;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class Common {
 
-    static String mRootInputPath = "";
-    static String mRootOutputPath = "";
+    static String ROOT_INPUT_PATH = "";
+    static String ROOT_OUTPUT_PATH = "";
+    static Boolean CLF_MULTI_LEVEL = false;
 
     static CompilationUnit getParseUnit(File javaFile) {
         CompilationUnit root = null;
@@ -30,7 +29,7 @@ public final class Common {
 
     static void saveEmbedding(String txtEmbedding, String lastPart) {
         try {
-            File targetFile = new File(Common.mRootOutputPath + "/" + lastPart + ".csv");
+            File targetFile = new File(Common.ROOT_OUTPUT_PATH + "/" + lastPart + ".csv");
             if (targetFile.getParentFile().exists() || targetFile.getParentFile().mkdirs()) {
                 if (targetFile.exists() || targetFile.createNewFile()) {
                     Files.write(targetFile.toPath(),
@@ -55,6 +54,10 @@ public final class Common {
     }
 
     public static int getLabelBinary(File javaFile, String methodName) {
+        return javaFile.getName().endsWith("_" + methodName + ".java") ? 1 : 0;
+    }
+
+    public static int getLabelVal(File javaFile, String methodName) {
         return javaFile.getName().endsWith("_" + methodName + ".java") ? 1 : 0;
     }
 

@@ -5,5 +5,5 @@ mDataRoot="/scratch/rabin/data/code2vec/handcrafted"
 jType="java-large"
 
 inputPath=${mDataRoot}/${mTopN}/"Methods"/${jType}
-outputPath="../data/handcrafted"/${jType}/${mTopN}/"count"
+outputPath="../data/handcrafted"/${jType}/${mTopN}/"multi"/"count"
 java -jar target/jar/JavaHFE.jar ${inputPath} ${outputPath} true

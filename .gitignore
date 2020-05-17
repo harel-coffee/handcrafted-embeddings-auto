@@ -1,6 +1,14 @@
 # OS
 .DS_Store
 Icon?
+<<<<<<< HEAD
+=======
+data/
+result/
+temp.py
+steps.txt
+latex/
+>>>>>>> 58d6df9... execute svmlight on light format data
 
 # JavaHFE
 **/*.iml

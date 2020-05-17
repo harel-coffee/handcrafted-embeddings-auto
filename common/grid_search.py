@@ -1,10 +1,6 @@
-
 import pandas as pd
 import numpy as np
-from datetime import datetime
-import os, pathlib, shutil
 from sklearn import preprocessing
-from sklearn import model_selection
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import GridSearchCV
 from sklearn.naive_bayes import GaussianNB, MultinomialNB, BernoulliNB
@@ -15,10 +11,11 @@ from sklearn.linear_model import Perceptron
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
-import sys, warnings
+import os, sys, warnings
 if not sys.warnoptions:
     warnings.simplefilter("ignore")
-    os.environ["PYTHONWARNINGS"] = "ignore" # Also affect subprocesses
+    os.environ["PYTHONWARNINGS"] = "ignore"
+import config as cf
 
 # params
 mRS =  42 #int(datetime.now().timestamp())
@@ -28,19 +25,12 @@ mTOL = 0.001 #Tolerance for stopping criterion
 mVF = 0.1 #validation_fraction for early stopping
 mSKF = [5,10] #Train/Test and GridSearch
 
-mClfs = ["NB", "LR", "SVM", "GBDT", "PT"]
-mDataTypes = ["java-large"]
-mDataCats = ["t470"]
-mFeatureTypes = ["flat"]
-mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close", "start", "add", "write", "create", "tearDown", "clear", "read", "reset", "update"]
-mTargets = ["equals", "main", "setUp", "onCreate", "toString", "run", "hashCode", "init", "execute", "get", "close"]
-
 mDebug = False
 
 # methods
-def getDataset(filename):
+def get_dataset(filename):
     df = pd.read_csv(filename, header=None, index_col=None)
-    training_data = df.drop([df.columns[0], df.columns[1]], axis=1) #drop path,method
+    training_data = df.drop([df.columns[0], df.columns[1]], axis=1) #drop path,mtarget
     correct_labels = training_data.iloc[:,-1]
     feature_vectors = training_data.drop(training_data.columns[-1], axis=1) #drop label
     scaler = preprocessing.StandardScaler().fit(feature_vectors)
@@ -48,7 +38,7 @@ def getDataset(filename):
     X_all, y_all = scaled_features, correct_labels
     return X_all, y_all
 
-def getBestNB(nbType=None):
+def get_best_NB(nbType=None):
     clf, param_dict = None, None
     if nbType == "binary":
         alpha_range = np.linspace(start=0.1, stop=1.0, num=10)
@@ -60,7 +50,7 @@ def getBestNB(nbType=None):
         clf = GaussianNB()
     return clf, param_dict
 
-def getBestLR():
+def get_best_LR():
     C_range = np.logspace(start=-5, stop=5, num=11, base=10)
     param_dict1 = dict(C=C_range, solver=['liblinear'], penalty=['l1', 'l2'])
     param_dict2 = dict(C=C_range, solver=['lbfgs'], penalty=['l2'])
@@ -68,7 +58,7 @@ def getBestLR():
     clf = LogisticRegression(max_iter=mEPOCHS, tol=mTOL, n_jobs=-1, random_state=mRS)
     return clf, param_dict
 
-def getBestSVM():
+def get_best_SVM():
     C_range = np.logspace(start=-5, stop=5, num=11, base=10)
     gamma_range = np.logspace(start=-5, stop=3, num=9, base=10)
     param_dict1 = dict(C=C_range, kernel=['linear'])
@@ -77,7 +67,7 @@ def getBestSVM():
     clf = SVC(max_iter=mEPOCHS, tol=mTOL, random_state=mRS)
     return clf, param_dict
 
-def getBestGBDT():
+def get_best_GBDT():
     n_range = np.array([1, 5, 10, 25, 50, 75, 100])
     lr_range = np.array([0.001, 0.005, 0.01, 0.05, 0.1, 0.5])
     depth_range = np.array([3, 5, 7])
@@ -85,7 +75,7 @@ def getBestGBDT():
     clf = GradientBoostingClassifier(validation_fraction=mVF, n_iter_no_change=mPATIENCE, tol=mTOL, random_state=mRS)
     return clf, param_dict
 
-def getBestPT():
+def get_best_PT():
     alpha_range = np.logspace(start=-5, stop=5, num=11, base=10)
     param_dict = dict(alpha=alpha_range, penalty=['l1', 'l2'])
     clf = Perceptron(max_iter=mEPOCHS, tol=mTOL, shuffle=True,
@@ -93,18 +83,18 @@ def getBestPT():
                      n_jobs=-1, random_state=mRS)
     return clf, param_dict
 
-def getGridModel(salg, sft):
+def get_grid_model(salg, sft):
     clf, param_dict = None, None
     if salg == "NB":
-        clf, param_dict = getBestNB(sft)
+        clf, param_dict = get_best_NB(sft)
     elif salg == "LR":
-        clf, param_dict = getBestLR()
+        clf, param_dict = get_best_LR()
     elif salg == "SVM":
-        clf, param_dict = getBestSVM()
+        clf, param_dict = get_best_SVM()
     elif salg == "GBDT":
-        clf, param_dict = getBestGBDT()
+        clf, param_dict = get_best_GBDT()
     elif salg == "PT":
-        clf, param_dict = getBestPT()
+        clf, param_dict = get_best_PT()
     cv_skf = StratifiedKFold(n_splits=mSKF[1], shuffle=True, random_state=mRS)
     gclf = GridSearchCV(estimator=clf,
                         refit=True,
@@ -114,7 +104,7 @@ def getGridModel(salg, sft):
                         cv=cv_skf)
     return gclf
 
-def evaluateModel(smodel, salg, sft, X_all, y_all):
+def evaluate_model(smodel, salg, sft, X_all, y_all):
     skf = StratifiedKFold(n_splits=mSKF[0], random_state=mRS)
     rlist = []
     for train_index, test_index in skf.split(X_all, y_all):
@@ -122,7 +112,7 @@ def evaluateModel(smodel, salg, sft, X_all, y_all):
         X_train, X_test = X_all[train_index], X_all[test_index]
         y_train, y_test = y_all[train_index], y_all[test_index]
         clf = None
-        clf = getGridModel(salg, sft)
+        clf = get_grid_model(salg, sft)
         clf.fit(X_train, y_train)
         if mDebug == True:
             print(smodel, salg, sft, ":")
@@ -147,7 +137,7 @@ def evaluateModel(smodel, salg, sft, X_all, y_all):
         rlist.append(clist)
     return rlist
 
-def computeAvgResult(mroot):
+def compute_avg_result(mroot):
     mpath = mroot + "_skf.csv"
     mdf = pd.read_csv(mpath)
     adf = mdf.groupby(by=['methodClf'], sort=False).mean().reset_index()
@@ -156,26 +146,3 @@ def computeAvgResult(mroot):
     mpath = mroot + "_avg.csv"
     adf.to_csv(mpath, index=None)
     print("Done: ", mroot)
-
-# main
-for salg in mClfs:
-    for jt in mDataTypes:
-        for jc in mDataCats:
-            mroot = "../result/code2vec/score/" + jt + "/" + jc + "/" + salg
-            print("Start: ", mroot)
-            mcols = ['methodClf','algClf','accuracy','precision','recall','f1-score','type-1','type-2']
-            mdf = pd.DataFrame(columns=mcols)
-            for mtarget in mTargets:
-                print("Start: ", mtarget)
-                for sft in mFeatureTypes:
-                    smodel = mtarget + "_" + sft
-                    mpath = "../data/code2vec/" + jt + "/" + jc + "/" + sft + "/" + mtarget + ".csv"
-                    X_all, y_all = getDataset(mpath)
-                    rlist = evaluateModel(smodel, salg, sft, X_all, y_all)
-                    tdf = pd.DataFrame(rlist, columns=mcols)
-                    mdf = mdf.append(tdf, ignore_index=True)
-                print("Done: ", mtarget)
-            mpath = mroot + "_skf.csv"
-            pathlib.Path(os.path.dirname(mpath)).mkdir(parents=True, exist_ok=True)
-            mdf.to_csv(mpath, index=None)
-            computeAvgResult(mroot)

@@ -35,3 +35,10 @@ RESULT_PATH  = ROOT_PATH   + "result/"
 RESULT_KIND  = "{}" + "/" + DATASET + "/" + CLF_TYPE + "/" + CLF_NAME + "_" + "{}" #EMB_TYPE, FEATURE_TYPE
 LOG_PATH     = RESULT_PATH + RESULT_KIND + ".log"
 MODEL_PATH   = RESULT_PATH + RESULT_KIND + ".model"
+
+# Auto sets
+def auto_update_types(emb_type, feature_type):
+    global DATA_VEC, LOG_PATH, MODEL_PATH
+    DATA_VEC = DATA_VEC.format(emb_type)
+    LOG_PATH = LOG_PATH.format(emb_type, feature_type)
+    MODEL_PATH = MODEL_PATH.format(emb_type, feature_type)

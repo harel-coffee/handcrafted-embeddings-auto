@@ -20,7 +20,7 @@ CLF_TYPES = ["multi", "binary"]
 HFE_TYPES = ["binary", "norm"]
 
 DATA_PATH = ROOT_PATH + "data/"
-DATA_VEC  = DATA_PATH + "{}" + "/" + DATASET #EMB_TYPE
+DATA_VEC  = DATA_PATH + "{}/" + DATASET #EMB_TYPE
 
 #Parameters
 MANUAL_SEED = 42
@@ -32,7 +32,7 @@ SVM_LIGHT = ROOT_PATH + "tool/svm_light/"
 
 # Model Logs
 RESULT_PATH  = ROOT_PATH   + "result/"
-RESULT_KIND  = "{}" + "/" + DATASET + "/" + CLF_TYPE + "/" + CLF_NAME + "_" + "{}" #EMB_TYPE, FEATURE_TYPE
+RESULT_KIND  = RESULT_PATH + "{}/" + DATASET #EMB_TYPE
 LOG_PATH     = RESULT_PATH + RESULT_KIND + ".log"
 MODEL_PATH   = RESULT_PATH + RESULT_KIND + ".model"
 

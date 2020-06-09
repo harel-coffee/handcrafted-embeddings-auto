@@ -2,19 +2,15 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.*;
-import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import com.github.javaparser.ast.stmt.ThrowStmt;
-import com.github.javaparser.ast.stmt.TryStmt;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.visitor.TreeVisitor;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.File;
-
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class OneHotPCA extends VoidVisitorAdapter<Object> {
-    private static String mMethodName = "OneHotPCA";
+public class MethodPCA extends VoidVisitorAdapter<Object> {
+    private final String mMethodName = "MethodPCA";
     private File mJavaFile = null;
     private String mLabelStr;
 
@@ -23,28 +19,26 @@ public class OneHotPCA extends VoidVisitorAdapter<Object> {
     private int mSuper, mSetUp, mNew, mBuild, mAdd;
     private int mBundle, mOnCreate, mSetContentView, mR;
     private int mToString, mFormat, mStringBuilder, mSbAppend, mStrAppend;
-    private int mTaskHandler, mBlock, mError, mMessage;
+    private int mTask, mError, mMessage;
     private int mHashCode, mTernary;
     private int mInit, mSet, mCreate;
-    private int mCmd, mExecute, mResponse, mTryCatchThrow, mThreadHandler;
+    private int mCmd, mExecute, mResponse;
     private int mReturn, mGet;
     private int mClose, mNull;
 
-    private int mLOC;
-
-    OneHotPCA() {
+    MethodPCA() {
         mInstanceOf = 0; mBoolean = 0; mEquals = 0; mThis = 0;
         mPrintln = 0; mString = 0;
         mSuper = 0; mSetUp = 0; mNew = 0; mBuild = 0; mAdd = 0;
         mBundle = 0; mOnCreate = 0; mSetContentView = 0; mR = 0;
         mToString = 0; mFormat = 0; mStringBuilder = 0; mSbAppend = 0; mStrAppend = 0;
-        mTaskHandler = 0; mBlock = 0; mError = 0; mMessage = 0;
+        mTask = 0; mError = 0; mMessage = 0;
         mHashCode = 0; mTernary = 0;
         mInit = 0; mSet = 0; mCreate = 0;
-        mCmd = 0; mExecute = 0; mResponse = 0; mTryCatchThrow = 0; mThreadHandler = 0;
+        mCmd = 0; mExecute = 0; mResponse = 0;
         mReturn = 0; mGet = 0;
         mClose = 0; mNull = 0;
-        mLOC = 0; mLabelStr = "";
+        mLabelStr = "";
     }
 
     public void inspectSourceCode(File javaFile) {
@@ -59,7 +53,6 @@ public class OneHotPCA extends VoidVisitorAdapter<Object> {
     @Override
     public void visit(CompilationUnit cu, Object obj) {
         locateOneHotPCA(cu, obj);
-        mLOC = Common.getLOC(cu, mMethodName);
         mLabelStr = Common.getLabelStr(cu);
         super.visit(cu, obj);
     }
@@ -98,13 +91,9 @@ public class OneHotPCA extends VoidVisitorAdapter<Object> {
                                 }
                             }
                         }.visitPreOrder(node);
-                    } else if (node instanceof BlockStmt) {
-                        mBlock++;
                     } else if (node instanceof ConditionalExpr
                             && node.toString().contains("?")) {
                         mTernary++;
-                    } else if (node instanceof TryStmt || node instanceof ThrowStmt) {
-                        mTryCatchThrow++;
                     } else if (node instanceof NullLiteralExpr) {
                         mNull++;
                     }
@@ -124,8 +113,6 @@ public class OneHotPCA extends VoidVisitorAdapter<Object> {
             mStringBuilder++;
         } else if (subExpr.equals("CommandLine")) {
             mCmd++;
-        } else if (subExpr.equals("Thread")) {
-            mThreadHandler++;
         }
     }
 
@@ -152,7 +139,7 @@ public class OneHotPCA extends VoidVisitorAdapter<Object> {
         } else if (subExpr.equals("append")) {
             mSbAppend++;
         } else if (subExpr.contains("task") || subExpr.contains("handler")) {
-            mTaskHandler++;
+            mTask++;
         } else if (subExpr.contains("error")) {
             mError++;
         } else if (subExpr.contains("message")) {
@@ -176,8 +163,6 @@ public class OneHotPCA extends VoidVisitorAdapter<Object> {
         } else if (subExpr.contains("fail")) {
             //onFailure, isFailed, FAILURE
             mResponse++;
-        } else if (subExpr.contains("handler")) {
-            mThreadHandler++;
         } else if (subExpr.startsWith("get")) {
             mGet++;
         } else if (subExpr.equals("close")) {
@@ -194,13 +179,12 @@ public class OneHotPCA extends VoidVisitorAdapter<Object> {
                 mSuper + "," + mSetUp + "," + mNew + "," + mBuild + "," + mAdd + "," +
                 mBundle + "," + mOnCreate + "," + mSetContentView + "," + mR + "," +
                 mToString + "," + mFormat + "," + mStringBuilder + "," + mSbAppend + "," + mStrAppend + "," +
-                mTaskHandler + "," + mBlock + "," + mError + "," + mMessage + "," +
+                mTask + "," + mError + "," + mMessage + "," +
                 mHashCode + "," + mTernary + "," +
                 mInit + "," + mSet + "," + mCreate + "," +
-                mCmd + "," + mExecute + "," + mResponse + "," + mTryCatchThrow + "," + mThreadHandler + "," +
+                mCmd + "," + mExecute + "," + mResponse + "," +
                 mReturn + "," + mGet + "," +
-                mClose + "," + mNull + "," +
-                mLOC;
+                mClose + "," + mNull ;
     }
 
 }

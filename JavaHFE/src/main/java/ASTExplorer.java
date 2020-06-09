@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 
 public class ASTExplorer implements Callable<Void> {
 
-    ASTExplorer(String inputPath, String outputPath, Boolean clfMultilevel) {
+    ASTExplorer(String inputPath, String outputPath, boolean clfMultilevel) {
         if (!inputPath.endsWith("/")) {
             inputPath += "/";
         }
@@ -39,11 +39,11 @@ public class ASTExplorer implements Callable<Void> {
             try {
                 if (Common.CLF_MULTI_LEVEL) {
                     // multilevel classifier
-                    new OneHotPCA().inspectSourceCode(javaFile);
+                    //new MethodPCA().inspectSourceCode(javaFile);
+                    new ComplexityPCA().inspectSourceCode(javaFile);
                 } else {
                     binaryClf(javaFile);
                 }
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

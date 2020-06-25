@@ -41,14 +41,15 @@ public class ComplexityPCA extends VoidVisitorAdapter<Object> {
         mLabelStr = "";
     }
 
-    public void inspectSourceCode(File javaFile) {
+    public String inspectSourceCode(File javaFile) {
         this.mJavaFile = javaFile;
         CompilationUnit root = Common.getParseUnit(mJavaFile);
         if (root != null) {
             this.visit(root.clone(), null);
-            Common.saveEmbedding(this.toString(), mMethodName);
-            System.out.println(this.toString());
+            //Common.saveEmbedding(this.toString(), mMethodName);
+            return this.toString();
         }
+        return null;
     }
 
     @Override
@@ -154,8 +155,9 @@ public class ComplexityPCA extends VoidVisitorAdapter<Object> {
 
     @Override
     public String toString() {
-        return mJavaFile + "," +
-                mLabelStr + "," +
+        //return mJavaFile + "," +
+                //mLabelStr + "," +
+        return  "," +
                 mLOC + "," + mBlock + "," + mBasicBlock + "," +
                 mParameter + "," + mLocalVariable + "," + mGlobalVariable + "," +
                 mLoop + "," + mJump + "," + mDecision + "," + mCondition + "," +

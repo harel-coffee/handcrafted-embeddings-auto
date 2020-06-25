@@ -41,13 +41,15 @@ public class MethodPCA extends VoidVisitorAdapter<Object> {
         mLabelStr = "";
     }
 
-    public void inspectSourceCode(File javaFile) {
+    public String inspectSourceCode(File javaFile) {
         this.mJavaFile = javaFile;
         CompilationUnit root = Common.getParseUnit(mJavaFile);
         if (root != null) {
             this.visit(root.clone(), null);
-            Common.saveEmbedding(this.toString(), mMethodName);
+            //Common.saveEmbedding(this.toString(), mMethodName);
+            return this.toString();
         }
+        return null;
     }
 
     @Override

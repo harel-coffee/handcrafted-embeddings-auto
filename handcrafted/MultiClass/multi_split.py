@@ -3,10 +3,13 @@ import pandas as pd
 from sklearn import preprocessing
 import os, pathlib
 
-ph_file = cf.DATA_VEC.format("handcrafted") + "/multi/{}/{}.csv"
+filename = "OneHotPCA" #OneHotPCA/ComplexityPCA
+filetype = "onehot" #onehot/complexity
+
+ph_file = cf.DATA_VEC.format("handcrafted") + "/" + filetype + "/multi/{}/{}.csv"
+hfe_file = ph_file.format("count", filename)
 
 # Split into train/val/test
-hfe_file = ph_file.format("count", "OneHotPCA")
 df = pd.read_csv(hfe_file, header=None)
 for part1, part2 in zip(['training','validation','test'], ['train','val','test']):
     df_part   = df[df[0].str.contains(cf.DATASET+'/' + part1 + '/')]

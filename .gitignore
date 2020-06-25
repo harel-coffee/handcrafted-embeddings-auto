@@ -8,7 +8,12 @@ result/
 temp.py
 steps.txt
 latex/
+<<<<<<< HEAD
 >>>>>>> 58d6df9... execute svmlight on light format data
+=======
+temp/
+*.csv
+>>>>>>> b3c6d9e... combined complexity into methods
 
 # JavaHFE
 **/*.iml

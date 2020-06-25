@@ -6,11 +6,12 @@ from subprocess import check_output
 
 # Set Params
 cg_range = list(np.logspace(start=-3, stop=3, num=7, base=10))
+filetype = "onehot" #onehot/complexity
 
 # For each embedding
 for emb_type in cf.HFE_TYPES:
     print("For emb_type = {}:".format(emb_type))
-    light_root = cf.DATA_VEC.format("handcrafted") + "/light/{}".format(emb_type)
+    light_root = cf.DATA_VEC.format("handcrafted") + "/{}/light/{}".format(filetype, emb_type)
 
     # For each method
     for method in cf.TOP_LABELS:

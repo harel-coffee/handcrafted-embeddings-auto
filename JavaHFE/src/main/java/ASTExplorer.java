@@ -38,9 +38,11 @@ public class ASTExplorer implements Callable<Void> {
         javaFiles.forEach((javaFile) -> {
             try {
                 if (Common.CLF_MULTI_LEVEL) {
-                    // multilevel classifier
-                    //new MethodPCA().inspectSourceCode(javaFile);
-                    new ComplexityPCA().inspectSourceCode(javaFile);
+                    String methodHFE = new MethodPCA().inspectSourceCode(javaFile);
+                    String complexityHFE = new ComplexityPCA().inspectSourceCode(javaFile);
+                    String combinedHFE = methodHFE + complexityHFE;
+                    Common.saveEmbedding(combinedHFE, "OneHotPCA");
+                    System.out.println(combinedHFE);
                 } else {
                     binaryClf(javaFile);
                 }

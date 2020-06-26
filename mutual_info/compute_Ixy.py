@@ -4,10 +4,10 @@ from sklearn.feature_selection import mutual_info_classif
 import os, pathlib
 
 EMB_GROUPS = [
-    ("handcrafted", "multi/binary"),
-    ("handcrafted", "multi/norm"),
-    ("code2vec", "flat")
+    ("handcrafted", "onehot/multi/binary"),
+    ("handcrafted", "onehot/multi/norm")
 ]
+ig_threshold = 0.1
 
 PH_DATA_FILE   = cf.DATA_VEC + "/{}/test.csv"
 PH_RESULT_FILE = cf.RESULT_PATH + "mutual_info/{}/" + cf.DATASET + "/{}/test.csv"
@@ -27,11 +27,15 @@ for emb_grp in EMB_GROUPS:
     sort_Ixy = sorted(Ixy, reverse=True)
     rank_Ixy = [sort_Ixy.index(x) for x in Ixy]
 
+    ig_features = []
     pathlib.Path(os.path.dirname(RESULT_FILE)).mkdir(parents=True, exist_ok=True)
     with open(RESULT_FILE, 'w') as f_Ixy:
         f_Ixy.write("{} : {} : {}\n".format("feature", "rank", "mutual_info"))
         for ft, rank, ig, in zip(X.columns, rank_Ixy, Ixy):
-            f_Ixy.write("{} : {} : {}\n".format(ft, rank, ig))
-            print("{} : {} : {}".format(ft, rank, ig))
+            f_Ixy.write("{},{},{}\n".format(ft, rank, ig))
+            print("{},{},{}".format(ft, rank, ig))
+            if ig >= ig_threshold: ig_features.append(ft)
 
+    print("\n{}\n".format("-------"))
+    print("ig_features = ", ig_features)
     print("\n{}\n".format("-------"))

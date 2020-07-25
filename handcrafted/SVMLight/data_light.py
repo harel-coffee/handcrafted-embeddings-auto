@@ -50,4 +50,17 @@ for partition in cf.PARTITIONS:
         light_file = ph_file.format(filetype, "light/binary", method + "/" + partition)
         hp.save_svm_light_format(df_binary, light_file)
 
+        #mix:binary[e1-e35]+normalized[e36-e53]
+        df_mix = df_method.copy()
+        for c in df_mix.columns[2:37]:
+            df_mix[c] = df_mix[c].apply(lambda x: 1 if x>0 else 0)
+        for c in df_mix.columns[37:]:
+            df_mix[[c]] = preprocessing.StandardScaler().fit_transform(df_mix[[c]])
+        df_mix['label'] = df_mix['method'].apply(lambda x: +1 if x == method else -1)
+        mix_file = ph_file.format(filetype, "binary/mix", method + "/" + partition)
+        pathlib.Path(os.path.dirname(mix_file)).mkdir(parents=True, exist_ok=True)
+        df_mix.to_csv(mix_file, index=False)
+        light_file = ph_file.format(filetype, "light/mix", method + "/" + partition)
+        hp.save_svm_light_format(df_mix, light_file)
+
         print("Completed for {}-{} file.".format(method, partition))

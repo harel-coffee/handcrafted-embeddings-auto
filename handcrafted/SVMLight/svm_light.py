@@ -64,3 +64,4 @@ for emb_type in cf.HFE_TYPES:
             f_result.write("{},{},{},{},{},{}\n".format(method, "hfe_" + emb_type, acc, pre, rec, f1s))
 
         hp.save_log_msg("Evaluation completed.")
+

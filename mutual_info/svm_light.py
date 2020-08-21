@@ -6,10 +6,10 @@ from subprocess import check_output
 
 # Set Params
 cg_range = list(np.logspace(start=-3, stop=3, num=7, base=10))
-filetype = "infogain" #onehot/complexity/infogain
+filetype = "IG25" #onehot/complexity
 
 # For each embedding
-for emb_type in cf.HFE_TYPES:
+for emb_type in ["binary"]: #cf.HFE_TYPES:
     print("For emb_type = {}:".format(emb_type))
     light_root = cf.DATA_VEC.format("handcrafted") + "/{}/light/{}".format(filetype, emb_type)
 
@@ -64,3 +64,4 @@ for emb_type in cf.HFE_TYPES:
             f_result.write("{},{},{},{},{},{}\n".format(method, "hfe_" + emb_type, acc, pre, rec, f1s))
 
         hp.save_log_msg("Evaluation completed.")
+

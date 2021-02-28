@@ -9,7 +9,7 @@ This project contains the source code for the paper 'Towards Demystifying Dimens
 ├── images/                 # some figures and tables from the paper for README.
 ├── report/                 # scripts to generate figures and tables.
 ├── svm-handcrafted/        # scripts to dump SVMlight format data and train models.
-├── temp/                   # temoprary working files, ignore it.
+├── temp/                   # temoprary working files, skip it.
 ``` 
 
 ---
@@ -75,7 +75,7 @@ This project contains the source code for the paper 'Towards Demystifying Dimens
     isbn = {9781450381253},
     publisher = {Association for Computing Machinery},
     address = {New York, NY, USA},
-    url = {https://doi-org.ezproxy.lib.uh.edu/10.1145/3416506.3423580},
+    url = {https://dl.acm.org/doi/10.1145/3416506.3423580},
     doi = {10.1145/3416506.3423580},
     booktitle = {Proceedings of the 1st ACM SIGSOFT International Workshop on Representation Learning for Software Engineering and Program Languages},
     pages = {29–38},

@@ -1,4 +1,4 @@
-# Handcrafted Embeddings
+# Handcrafted Program Embeddings
 
 This project contains the source code for the paper 'Towards Demystifying Dimensions of Source Code Embeddings' ([arXiv](https://arxiv.org/abs/2008.13064), [ACM DL](https://dl.acm.org/doi/10.1145/3416506.3423580)) accepted at the [RL+SE&PL'20](https://rlsepl-fse.github.io/) workshop, co-located with [ESEC/FSE'20](https://2020.esec-fse.org/track/esecfse-2020-workshops) conference.
 

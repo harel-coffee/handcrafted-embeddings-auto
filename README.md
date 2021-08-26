@@ -23,7 +23,7 @@ This project contains the source code for the paper 'Towards Demystifying Dimens
 ## Top-Ten Deduplication Datasets:
 
 - Download [Java-large](https://github.com/tech-srl/code2seq#java) dataset.
-- Extract methods from class file (i.e. [JavaMethodExtractor](https://github.com/mdrafiqulrabin/tnpa-AST/tree/master/JavaMethodExtractor)).
+- Extract methods from class file (i.e. [JavaMethodExtractor](https://github.com/mdrafiqulrabin/tnpa-generalizability/tree/master/NPM-IST21/JavaMethodExtractor)).
 - Apply [DuplicateCodeDetector](https://github.com/microsoft/near-duplicate-code-detector/tree/master/DuplicateCodeDetector) to remove near duplicate methods.
 - Select ten most-frequent methods (i.e. [topN](https://github.com/mdrafiqulrabin/handcrafted-embeddings/blob/master/temp/sample/topN.py)).
 
@@ -33,8 +33,9 @@ This project contains the source code for the paper 'Towards Demystifying Dimens
 
 - Run [HandcraftedExtractor](https://github.com/mdrafiqulrabin/handcrafted-embeddings/blob/master/HandcraftedExtractor) to extract handcrafted embeddings.
 - Check [code2vec](https://github.com/tech-srl/code2vec#exporting-the-code-vectors-for-the-given-code-examples) for path-based code vectors.
-- Check [program_embeddings](https://github.com/mdrafiqulrabin/program_embeddings) for sequence-based baselines.
-
+- Check [naive_embeddings](https://github.com/mdrafiqulrabin/code_naive_embeddings) for sequence-based naive baselines.
+- Check [complexity_embeddings](https://github.com/mdrafiqulrabin/code_complexity_embeddings) for code complexity metrics.
+- 
 <img src="./images/FeatureList.png" alt="FeatureList" width="400"/> <img src="./images/VectorType.png" alt="VectorType" width="400"/>
 
 ---
